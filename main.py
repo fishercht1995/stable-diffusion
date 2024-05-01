@@ -17,6 +17,9 @@ from pytorch_lightning.callbacks import ModelCheckpoint, Callback, LearningRateM
 from pytorch_lightning.utilities.distributed import rank_zero_only
 from pytorch_lightning.utilities import rank_zero_info
 
+import wandb
+from pytorch_lightning.loggers import WandbLogger
+
 from ldm.data.base import Txt2ImgIterableBaseDataset
 from ldm.util import instantiate_from_config
 
@@ -731,7 +734,10 @@ if __name__ == "__main__":
         else:
             logger_cfg = OmegaConf.create()
         logger_cfg = OmegaConf.merge(default_logger_cfg, logger_cfg)
-        trainer_kwargs["logger"] = instantiate_from_config(logger_cfg)
+        wandb.init(project="stable_diffusion")
+        wandb_logger = WandbLogger()
+        #trainer_kwargs["logger"] = instantiate_from_config(logger_cfg)
+        trainer_kwargs["logger"] = wandb_logger
 
         # modelcheckpoint - use TrainResult/EvalResult(checkpoint_on=metric) to
         # specify which metric is used to determine best models
